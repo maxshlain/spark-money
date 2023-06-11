@@ -1,9 +1,27 @@
 using BlazorSpark.Library.Environment;
+using Serilog;
+using Serilog.Events;
 using spark_money.Application.Startup;
 
 EnvManager.LoadConfig();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((_, c) =>
+	c.Enrich.FromLogContext()
+		.MinimumLevel.Debug()
+		.WriteTo.Console()
+		// Add Sentry integration with Serilog
+		// Two levels are used to configure it.
+		// One sets which log level is minimally required to keep a log message as breadcrumbs
+		// The other sets the minimum level for messages to be sent out as events to Sentry
+		.WriteTo.Sentry(s =>
+		{
+			s.Dsn = "https://34711fa19c7d4a65bd4d807cf5a89fda@o4505341641621504.ingest.sentry.io/4505341643784192";
+			s.MinimumBreadcrumbLevel = LogEventLevel.Debug;
+			s.MinimumEventLevel = LogEventLevel.Warning;
+		}));
+
 builder.Configuration.AddEnvironmentVariables();
 
 // Add all services to the container.

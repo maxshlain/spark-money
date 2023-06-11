@@ -8,6 +8,12 @@ builder.Configuration.AddEnvironmentVariables();
 
 // Add all services to the container.
 builder.Services.AddAppServices(builder.Configuration);
+builder.WebHost.UseSentry(options =>
+{
+	options.Dsn = "https://34711fa19c7d4a65bd4d807cf5a89fda@o4505341641621504.ingest.sentry.io/4505341643784192";
+	options.Debug = true;
+	options.TracesSampleRate = 1.0;
+});
 
 var app = builder.Build();
 
